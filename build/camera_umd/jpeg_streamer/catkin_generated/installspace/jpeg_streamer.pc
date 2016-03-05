@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/install
+
+Name: jpeg_streamer
+Description: Description of jpeg_streamer
+Version: 0.2.4
+Cflags: 
+Libs: -L/home/bigrig/Sentinel/install/lib 
+Requires: 

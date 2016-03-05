@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/install
+
+Name: usb_cam
+Description: Description of usb_cam
+Version: 0.3.4
+Cflags: -I/home/bigrig/Sentinel/install/include
+Libs: -L/home/bigrig/Sentinel/install/lib -lusb_cam
+Requires: 

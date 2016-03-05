@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/devel
+
+Name: depth_image_proc
+Description: Description of depth_image_proc
+Version: 1.12.15
+Cflags: -I/home/bigrig/Sentinel/src/image_pipeline/depth_image_proc/include
+Libs: -L/home/bigrig/Sentinel/devel/lib -ldepth_image_proc
+Requires: 

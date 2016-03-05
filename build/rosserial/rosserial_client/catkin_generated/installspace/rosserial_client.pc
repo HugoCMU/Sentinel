@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/install
+
+Name: rosserial_client
+Description: Description of rosserial_client
+Version: 0.7.1
+Cflags: 
+Libs: -L/home/bigrig/Sentinel/install/lib 
+Requires: 

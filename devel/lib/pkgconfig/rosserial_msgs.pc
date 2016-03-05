@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/devel
+
+Name: rosserial_msgs
+Description: Description of rosserial_msgs
+Version: 0.7.1
+Cflags: -I/home/bigrig/Sentinel/devel/include
+Libs: -L/home/bigrig/Sentinel/devel/lib 
+Requires: message_runtime

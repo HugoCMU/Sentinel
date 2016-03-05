@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/devel
+
+Name: camera_calibration
+Description: Description of camera_calibration
+Version: 1.12.15
+Cflags: 
+Libs: -L/home/bigrig/Sentinel/devel/lib 
+Requires: 

@@ -1,0 +1,35 @@
+<launch>
+ <!-- Launch camera drivers -->
+  <group ns="stereo" >
+  <!-- left camera -->
+        <node pkg="cv_camera" type="cv_camera_node" name="cv_camera_left_node" >
+            <param name="rate" value="15" />
+            <param name="device_id" value="2" />
+            <!-- <param name="file" value="/dev/video1" /> -->
+            <param name="frame_id" value="camera_left" />
+            <param name="image_width" value="640" />
+            <param name="image_height" value="480" />
+            <param name="image_rotation" value="1" />
+            <param name="camera_info_url" value="file:////home/bigrig/Sentinel/camera_calibration/left_calibration.yaml"/>
+        <remap from="cv_camera" to="left" />
+        </node>
+  <!-- right camera -->
+        <node pkg="cv_camera" type="cv_camera_node" name="cv_camera_right_node" >
+            <param name="rate" value="15" />
+            <param name="device_id" value="1" />
+            <!-- <param name="file" value="/dev/video2" /> -->
+            <param name="frame_id" value="camera_right" />
+            <param name="image_width" value="640" />
+            <param name="image_height" value="480" />
+            <param name="image_rotation" value="-1" />
+            <param name="camera_info_url" value="file:////home/bigrig/Sentinel/camera_calibration/right_calibration.yaml"/>
+        <remap from="cv_camera" to="right" />
+        </node>
+<!-- STEREO IMAGE PROC   -->
+<node pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" name="proc" args="_approximate_sync:=True" />
+  </group>
+  <!-- monitoring and configuration tools
+  <node pkg="rxtools" type="rxconsole" name="rxconsole" />
+  <node pkg="dynamic_reconfigure" type="reconfigure_gui"
+        name="reconfigure_gui" />  -->
+</launch>

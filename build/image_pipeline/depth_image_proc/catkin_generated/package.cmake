@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "depth_image_proc")
+set(depth_image_proc_MAINTAINER "Vincent Rabaud <vincent.rabaud@gmail.com>")
+set(depth_image_proc_DEPRECATED "")
+set(depth_image_proc_VERSION "1.12.15")
+set(depth_image_proc_BUILD_DEPENDS "boost" "cmake_modules" "cv_bridge" "eigen_conversions" "image_geometry" "image_transport" "message_filters" "nodelet" "sensor_msgs" "stereo_msgs" "tf2" "tf2_ros")
+set(depth_image_proc_RUN_DEPENDS "boost" "cv_bridge" "eigen_conversions" "image_geometry" "image_transport" "nodelet" "tf2" "tf2_ros")
+set(depth_image_proc_BUILDTOOL_DEPENDS "catkin")

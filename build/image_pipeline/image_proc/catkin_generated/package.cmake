@@ -1,0 +1,8 @@
+set(_CATKIN_CURRENT_PACKAGE "image_proc")
+set(image_proc_VERSION "1.12.15")
+set(image_proc_MAINTAINER "Vincent Rabaud <vincent.rabaud@gmail.com>")
+set(image_proc_BUILD_DEPENDS "boost" "cv_bridge" "dynamic_reconfigure" "image_geometry" "image_transport" "libopencv-dev" "nodelet" "roscpp" "sensor_msgs")
+set(image_proc_RUN_DEPENDS "cv_bridge" "dynamic_reconfigure" "image_geometry" "image_transport" "libopencv-dev" "nodelet" "roscpp" "sensor_msgs")
+set(image_proc_DEPRECATED "")
+set(image_proc_BUILDTOOL_DEPENDS "catkin")
+set(image_proc_BUILDTOOL_DEPENDS_catkin_VERSION_GTE "0.5.68")

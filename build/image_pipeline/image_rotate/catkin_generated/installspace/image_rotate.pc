@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/install
+
+Name: image_rotate
+Description: Description of image_rotate
+Version: 1.12.15
+Cflags: -I/home/bigrig/Sentinel/install/include
+Libs: -L/home/bigrig/Sentinel/install/lib 
+Requires: 

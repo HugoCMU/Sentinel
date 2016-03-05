@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/devel
+
+Name: image_view
+Description: Description of image_view
+Version: 1.12.15
+Cflags: -I/home/bigrig/Sentinel/devel/include
+Libs: -L/home/bigrig/Sentinel/devel/lib 
+Requires: dynamic_reconfigure

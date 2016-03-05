@@ -1,0 +1,53 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec534282177/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec534282177.dir/build.make CMakeFiles/cmTryCompileExec534282177.dir/build
+make[1]: Entering directory `/home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec534282177.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec534282177.dir/CheckSymbolExists.c.o   -c /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec534282177
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec534282177.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec534282177.dir/CheckSymbolExists.c.o  -o cmTryCompileExec534282177 -rdynamic 
+CMakeFiles/cmTryCompileExec534282177.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+make[1]: *** [cmTryCompileExec534282177] Error 1
+make[1]: Leaving directory `/home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec534282177/fast] Error 2
+
+File /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3044363707/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3044363707.dir/build.make CMakeFiles/cmTryCompileExec3044363707.dir/build
+make[1]: Entering directory `/home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3044363707.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec3044363707.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec3044363707
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3044363707.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec3044363707.dir/CheckFunctionExists.c.o  -o cmTryCompileExec3044363707 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+make[1]: *** [cmTryCompileExec3044363707] Error 1
+make[1]: Leaving directory `/home/bigrig/Sentinel/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec3044363707/fast] Error 2
+
+

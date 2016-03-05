@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/devel
+
+Name: rosserial_server
+Description: Description of rosserial_server
+Version: 0.7.1
+Cflags: -I/home/bigrig/Sentinel/src/rosserial/rosserial_server/include
+Libs: -L/home/bigrig/Sentinel/devel/lib 
+Requires: roscpp rosserial_msgs topic_tools

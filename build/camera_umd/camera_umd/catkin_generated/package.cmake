@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "camera_umd")
+set(camera_umd_MAINTAINER "Ken Tossell <ken@tossell.net>")
+set(camera_umd_DEPRECATED "")
+set(camera_umd_VERSION "0.2.4")
+set(camera_umd_BUILD_DEPENDS )
+set(camera_umd_RUN_DEPENDS "uvc_camera" "jpeg_streamer")
+set(camera_umd_BUILDTOOL_DEPENDS "catkin")
