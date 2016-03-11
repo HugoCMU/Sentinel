@@ -1,0 +1,8 @@
+prefix=/home/bigrig/Sentinel/install
+
+Name: sentinel_tracking
+Description: Description of sentinel_tracking
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/bigrig/Sentinel/install/lib 
+Requires: 

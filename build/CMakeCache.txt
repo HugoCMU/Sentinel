@@ -689,6 +689,9 @@ rosserial_msgs_SOURCE_DIR:STATIC=/home/bigrig/Sentinel/src/rosserial/rosserial_m
 //Value Computed by CMake
 rosserial_python_BINARY_DIR:STATIC=/home/bigrig/Sentinel/build/rosserial/rosserial_python
 
+//The directory containing a CMake configuration file for rosserial_python.
+rosserial_python_DIR:PATH=/home/bigrig/Sentinel/devel/share/rosserial_python/cmake
+
 //Value Computed by CMake
 rosserial_python_SOURCE_DIR:STATIC=/home/bigrig/Sentinel/src/rosserial/rosserial_python
 
@@ -724,6 +727,12 @@ rostime_DIR:PATH=/opt/ros/jade/share/rostime/cmake
 
 //The directory containing a CMake configuration file for sensor_msgs.
 sensor_msgs_DIR:PATH=/opt/ros/jade/share/sensor_msgs/cmake
+
+//Value Computed by CMake
+sentinel_tracking_BINARY_DIR:STATIC=/home/bigrig/Sentinel/build/sentinel_tracking
+
+//Value Computed by CMake
+sentinel_tracking_SOURCE_DIR:STATIC=/home/bigrig/Sentinel/src/sentinel_tracking
 
 //The directory containing a CMake configuration file for smclib.
 smclib_DIR:PATH=/opt/ros/jade/share/smclib/cmake
@@ -902,7 +911,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=22
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=23
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
