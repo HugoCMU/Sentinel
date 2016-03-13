@@ -8,7 +8,7 @@
   <!-- left camera -->
         <node pkg="cv_camera" type="cv_camera_node" name="cv_camera_left_node" >
             <param name="rate" value="15" />
-            <param name="device_id" value="2" />
+            <param name="device_id" value="0" />
             <!-- <param name="file" value="/dev/video1" /> -->
             <param name="frame_id" value="camera_left" />
             <param name="image_width" value="640" />

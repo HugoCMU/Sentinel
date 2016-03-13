@@ -9,11 +9,15 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rosserial_python
   std_msgs
+# Added for image conversion to opencv2 image
+  sensor_msgs
+  OpenCV
+  cv_bridge
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(OpenCV REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -105,6 +109,7 @@ catkin_package(
 #  LIBRARIES sentinel_tracking
 #  CATKIN_DEPENDS roscpp rospy rosserial_python std_msgs
 #  DEPENDS system_lib
+	DEPENDS opencv2
 )
 
 ###########
@@ -116,6 +121,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -135,10 +141,10 @@ include_directories(
 ## same as for the library above
 # add_dependencies(sentinel_tracking_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(sentinel_tracking_node
-#   ${catkin_LIBRARIES}
-# )
+# Specify libraries to link a library or executable target against
+#target_link_libraries(sentinel_tracking
+#	${OpenCV_LIBRARIES}
+#)
 
 #############
 ## Install ##
