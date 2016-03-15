@@ -6,7 +6,7 @@
  <!-- Launch camera drivers -->
   <group ns="stereo" >
   <!-- left camera -->
-        <node pkg="cv_camera" type="cv_camera_node" name="cv_camera_left_node" >
+        <node pkg="cv_camera" type="cv_camera_node" name="left" >
             <param name="rate" value="15" />
             <param name="device_id" value="0" />
             <!-- <param name="file" value="/dev/video1" /> -->
@@ -18,7 +18,7 @@
         <remap from="cv_camera" to="left" />
         </node>
   <!-- right camera -->
-        <node pkg="cv_camera" type="cv_camera_node" name="cv_camera_right_node" >
+        <node pkg="cv_camera" type="cv_camera_node" name="right" >
             <param name="rate" value="15" />
             <param name="device_id" value="1" />
             <!-- <param name="file" value="/dev/video2" /> -->

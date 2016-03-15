@@ -22,8 +22,8 @@ class tracker:
 	def __init__(self):
 
 		self.bridge = CvBridge()
-		self.image_sub = rospy.Subscriber("/stereo/cv_camera_right_node/image_raw", Image,self.callback_left)
-		self.image_sub = rospy.Subscriber("/stereo/cv_camera_left_node/image_raw", Image,self.callback_right)
+		self.image_sub = rospy.Subscriber("/stereo/right/image_mono", Image,self.callback_left)
+		self.image_sub = rospy.Subscriber("/stereo/left/image_mono", Image,self.callback_right)
 		self.image_left = None
 		self.image_right = None
 
@@ -61,10 +61,10 @@ class tracker:
 		print("Creating depth_map")
 
 		# Convert color images to gray for disparity map
-		image_right_mono = cv2.cvtColor(self.image_right, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
-		image_left_mono = cv2.cvtColor(self.image_left, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
+		# image_right_mono = cv2.cvtColor(self.image_right, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
+		# image_left_mono = cv2.cvtColor(self.image_left, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
 
-		stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=32, SADWindowSize=15)
+		stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=16, SADWindowSize=45)
 		disparity = stereo.compute(image_left_mono, image_right_mono)
 
 		# cv2.imshow("Left Raw Image", self.image_left)
