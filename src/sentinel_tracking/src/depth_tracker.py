@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
+from collections import Counter
+
 
 # camera_r = cv2.VideoCapture(0)
 # camera_l = cv2.VideoCapture(1)
@@ -48,25 +51,28 @@ rot_frame_l = cv2.imread('left_frame_thing.jpg',0)
 # cv2.imshow("Left Image", rot_frame_l)
 # cv2.waitKey(0)
 
-disparities = [16, 32, 48, 64, 80]
-SADWindowSize = [15, 17, 23, 27, 29, 39, 45, 55, 67, 73, 85, 99, 107, 115, 121]
+disparities = [0, 16, 32, 48, 64, 80]
+SADWindowSize = [5, 7, 15, 17, 23, 27, 29, 39, 45, 55, 67, 73, 85, 99, 107, 115, 121]
 
 for disp in disparities:
 
 	for sad in SADWindowSize:
 
 		print "(ndisparities, SADWindowSize): (" + str(disp) + " ," + str(sad) + ")"
-		stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=disp, SADWindowSize=sad)
-		disparity = stereo.compute(rot_frame_l, rot_frame_r)
 
-		cv2.imshow("Disparity Image", disparity)
+		stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=disp, SADWindowSize=sad)
+		disparity = stereo.compute(rot_frame_l, rot_frame_r, disptype=cv2.CV_32F)
+
+		# norm_coeff = 255 / disparity.max()
+
+		# cv2.namedWindow("Disparity Image", 0)
+		# cv2.imshow('Disparity Image', (disparity + 1) * norm_coeff / 255)
+		# cv2.waitKey(0)
 
 		cv2.namedWindow("Disparity Image", 0)
 		res = cv2.convertScaleAbs(disparity)
 		cv2.imshow('Disparity Image', res)
-
 		cv2.waitKey(0)
-
 
 # Calibrate Camera
 # rosrun camera_calibration cameracalibrator.py --size 9x7 --square 0.023 right:=/stereo/cv_camera_right_node/image_raw left:=/stereo/cv_camera_left_node/image_raw right_camera:=/stereo/cv_camera_right_node/ left_camera:=/stereo/cv_camera_left_node/

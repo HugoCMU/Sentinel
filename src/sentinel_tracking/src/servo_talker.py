@@ -9,15 +9,12 @@ class servos:
 
 	def __init__(self):
 
+		# Initialize publishers to servo commands
 		self.pub_1 = rospy.Publisher('/servo1', UInt16, queue_size=10)
 		self.pub_2 = rospy.Publisher('/servo2', UInt16, queue_size=10)
-		# Define global servo angle variables
-		self.angles_default = [45, 45]
 
-		# Define global default servo angles
-		self.angles = self.angles_default
-
-
+		# Set angles to default angles (set in launch file)
+		self.angles = [rospy.get_param("servo1_default"), rospy.get_param("servo2_default")]
 
 	def test_servos(self):
 		'''
@@ -46,8 +43,12 @@ class servos:
 			Function moves servos by angle increment
 		'''
 
+		# Multiply raw difference reading (pixels) by the gain
+		diff_servo1 = rospy.get_param("P_gain") * -1 * angle_diff[0]
+		diff_servo2 = rospy.get_param("P_gain") * -1 * angle_diff[1]
+
 		# Use set_servo function to set new angles
-		set_servos([self.angles[0] + angle_diff[0], self.angles[1] + angle_diff[1]])
+		self.set_servos([self.angles[0] + diff_servo1, self.angles[1] + diff_servo2])
 
 	def home_servos(self):
 		'''
@@ -55,8 +56,32 @@ class servos:
 		'''
 
 		# Use set_servos method and global default angles
-		self.set_servos(self.angles_default)
+		self.set_servos([rospy.get_param("servo1_default"), rospy.get_param("servo2_default")])
 
+	def check_angles(self, angles):
+		'''
+			Function returns true if the angles are outside allowable servo range
+		'''
+
+		# Check to see if angles are within range, printing message if not
+		if angles[0] < rospy.get_param("servo1_min"):
+			print "Servo 1 ( " + str(angles[0]) + " ) not in range (" + str(rospy.get_param("servo1_min")) + ", " + str(rospy.get_param("servo1_max")) + ")"
+			return True
+
+		if angles[0] > rospy.get_param("servo1_max"):
+			print "Servo 1 ( " + str(angles[0]) + " ) not in range (" + str(rospy.get_param("servo1_min")) + ", " + str(rospy.get_param("servo1_max")) + ")"
+			return True
+
+		if angles[1] < rospy.get_param("servo2_min"):
+			print "Servo 2 ( " + str(angles[1]) + " ) not in range (" + str(rospy.get_param("servo2_min")) + ", " + str(rospy.get_param("servo2_max")) + ")"
+			return True
+
+		if angles[1] > rospy.get_param("servo2_max"):
+			print "Servo 2 ( " + str(angles[1]) + " ) not in range (" + str(rospy.get_param("servo2_min")) + ", " + str(rospy.get_param("servo2_max")) + ")"
+			return True
+
+		# All the angles are within range
+		return False
 
 	def set_servos(self, angles):
 		'''
@@ -64,12 +89,16 @@ class servos:
 			will be heard by rosserial_arduino node
 		'''
 
-		print "Setting servos to (" + str(angles[0]) + ", " + str(angles[1]) + ")"
+		# Make sure angles are within allowable range
+		if self.check_angles(angles):
+			return
+
+		print "Setting servos from (" + str(self.angles[0]) + ", " + str(self.angles[1]) + ") to (" + str(angles[0]) + ", " + str(angles[1]) + ")"
 
 		# Update global variable
 		self.angles = angles
 
-		# Publish angle message
+		# Log and Publish angle message
 		rospy.loginfo(angles[0])
 		rospy.loginfo(angles[1])
 		self.pub_1.publish(angles[0])

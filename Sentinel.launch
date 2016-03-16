@@ -32,6 +32,23 @@
 <!-- STEREO IMAGE PROC   -->
         <node pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" name="proc" args="_approximate_sync:=True" />
   </group>
+  <!-- Launch people tracking node -->
+  <param name="servo1_default" value="90"/>
+  <param name="servo2_default" value="90"/>
+  <param name="servo1_min" value="0"/>
+  <param name="servo1_max" value="180"/>
+  <param name="servo2_min" value="0"/>
+  <param name="servo2_max" value="90"/>
+  <param name="P_gain" value="0.03"/>
+<!--   <node pkg="sentinel_tracking" type="tracker.py" name="sentinel_tracking">
+    <param name="servo1_default" value="45"/>
+    <param name="servo2_default" value="45"/>
+    <param name="servo1_min" value="0"/>
+    <param name="servo1_max" value="180"/>
+    <param name="servo2_min" value="0"/>
+    <param name="servo2_max" value="90"/>
+    <param name="P_gain" value="0.2"/>
+  </node> -->
   <!-- monitoring and configuration tools
   <node pkg="rxtools" type="rxconsole" name="rxconsole" />
   <node pkg="dynamic_reconfigure" type="reconfigure_gui"
