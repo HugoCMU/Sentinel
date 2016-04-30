@@ -5,7 +5,7 @@
 import rospy
 from std_msgs.msg import UInt16
 
-class servos:
+class servos(object):
 
 	def __init__(self):
 
@@ -28,7 +28,7 @@ class servos:
 		angles_1 = range(180)
 		angles_2 = range(90) * 2
 
-		for i in range(len(angles_1)):
+		for i in xrange(len(angles_1)):
 
 			rospy.loginfo(angles_1[i])
 			rospy.loginfo(angles_2[i])
@@ -107,6 +107,7 @@ class servos:
 
 if __name__ == '__main__':
 	try:
-		test_servos()
+		servo_obj = servos() 
+		test_servos(servo_obj)
 	except rospy.ROSInterruptException:
 		pass

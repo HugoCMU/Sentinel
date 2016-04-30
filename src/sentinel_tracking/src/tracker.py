@@ -26,7 +26,7 @@ import imutils
 # Import framework to deal with servos
 from servo_talker import servos
 
-class tracker:
+class tracker(object):
 
 	def __init__(self, servo_object):
 
