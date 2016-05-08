@@ -19,30 +19,73 @@ import sys
 # Import OpenCV and imutils (package for HOG people detection)
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from imutils.object_detection import non_max_suppression
-from imutils import paths
-import imutils
+# from imutils.object_detection import non_max_suppression
+# from imutils import paths
+# import imutils
 
 # Import framework to deal with servos
 from servo_talker import servos
+
+# Define camera rotation parameters
+LEFT_ROTATION_ANGLE = 90
+RIGHT_ROTATION_ANGLE = -90
+
+# Define wait time for images
+IMSHOW_WAIT_TIME = 1000 # 3 seconds
+
+def cv_size(img):
+	'''
+		Function returns image size (not a tuple)
+	'''
+	return img.shape[1::-1]
 
 class tracker(object):
 
 	def __init__(self, servo_object):
 
-		self.bridge = CvBridge()
-		# Subscribe to mono (grey) image directly to increase speed (no need to convert)
-		self.image_sub_left = rospy.Subscriber("/stereo/right/image_mono", Image,self.callback_left)
-		self.image_sub_right = rospy.Subscriber("/stereo/left/image_mono", Image,self.callback_right)
+		# Create camera capture objects
+		self.cam_left = cv2.VideoCapture(0)
+		self.cam_right = cv2.VideoCapture(1)
+
+		# Raw left and right images
+		self.raw_image_left = None
+		self.raw_image_right = None
+
+		# Rotated left and right images
 		self.image_left = None
 		self.image_right = None
 
-		# State variables track whether messages are up-to-date
-		self.state_left = False
-		self.state_right = False
-
 		# Servo object associated with tracker
 		self.servos = servo_object
+
+	def __str__(self):
+		'''
+			Function will show the stereo disparity map
+		'''
+
+		# Print out raw image sizes
+		print("Raw Left Image Size: " + str(tuple(cv_size(self.raw_image_left))))
+		print("Raw Right Image Size: " + str(tuple(cv_size(self.raw_image_right))))
+
+		# Print out rotated image sizes
+		print("Rotated Left Image Size: " + str(tuple(cv_size(self.image_left))))
+		print("Rotated Right Image Size: " + str(tuple(cv_size(self.image_right))))
+
+		# # Display Raw Left image for testing
+		# cv2.imshow("Raw Left Image", self.raw_image_left)
+		# cv2.waitKey(IMSHOW_WAIT_TIME)
+
+		# # Display image for testing
+		# cv2.imshow("Raw Right Image", self.raw_image_right)
+		# cv2.waitKey(IMSHOW_WAIT_TIME)
+
+		# # Display Raw Left image for testing
+		# cv2.imshow("Rotated Left Image", self.image_left)
+		# cv2.waitKey(IMSHOW_WAIT_TIME)
+
+		# # Display image for testing
+		# cv2.imshow("Rotated Right Image", self.image_right)
+		# cv2.waitKey(IMSHOW_WAIT_TIME)
 
 	def depth_map(self):
 		'''
@@ -52,161 +95,137 @@ class tracker(object):
 		print("Creating depth_map")
 
 		# Convert color images to gray for disparity map
-		# image_right_mono = cv2.cvtColor(self.image_right, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
-		# image_left_mono = cv2.cvtColor(self.image_left, cv2.COLOR_BGR2GRAY)#CV_BGR2GRAY)
+		image_right_mono = cv2.cvtColor(self.image_right, cv2.COLOR_BGR2GRAY)
+		image_left_mono = cv2.cvtColor(self.image_left, cv2.COLOR_BGR2GRAY)
 
-		# Compute disparity image using StereoBM function
-		stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=0, SADWindowSize=23)
-		disparity = stereo.compute(self.image_left, self.image_right, disptype=cv2.CV_32F)
-		disparity_clean = cv2.convertScaleAbs(disparity)
+		# Display image for testing
+		cv2.imshow("Monocromatic Right Image", image_right_mono)
+		cv2.waitKey(IMSHOW_WAIT_TIME)
+		# Display image for testing
+		cv2.imshow("Monocromatic Image", image_left_mono)
+		cv2.waitKey(IMSHOW_WAIT_TIME)
+
+		disparities = [16, 32, 48, 64, 80, 96, 112]
+		SADWindowSize = [10, 15, 20] #, 5, 7, 15, 20, 30] #[5, 7, 15, 17, 23, 27, 29, 39, 45, 55, 67, 73, 85, 99, 107, 115, 121]
+		uniquenessRatio = [1, 3, 10]
+		speckleWindowSize = [100, 200]
+		speckleRange = [20, 5, 1, 30]
+
+
+		for ur in uniquenessRatio:
+			for sw in speckleWindowSize:
+				for sr in speckleRange:
+					for dispa in disparities:
+						for sad in SADWindowSize:
+
+							# Get left and right images
+							self.grab_left()
+							self.grab_right()
+
+							# Rotate raw images
+							self.rotate_imgs()
+
+							print("--------------------------------------------------------------------")
+							print("(numDisparities: " + str(dispa))
+							print("(SADWindowSize: " + str(sad))
+							print("(uniquenessRatio: " + str(ur))
+							print("(speckleWindowSize: " + str(sw))
+							print("(speckleRange: " + str(sr))
+
+							window_size = 3
+							min_disp = 16
+							stereo = cv2.StereoSGBM(minDisparity=min_disp,
+							numDisparities=dispa,
+							SADWindowSize=sad,
+							P1 = 8*3*sad*sad,
+							P2 = 32*3*sad*sad,
+							disp12MaxDiff = 20,
+							preFilterCap=32,
+							uniquenessRatio = ur,
+							speckleWindowSize = sw,
+							speckleRange = sr,
+							fullDP=True
+							)
+
+							print("Got past computation")
+
+
+							disp = stereo.compute(self.image_left, self.image_right).astype(np.float32) / 16.0
+
+							print("Got past computation")
+
+							cv2.imshow('disparity', (disp-min_disp)/dispa)
+							cv2.waitKey(500)
+
+
+		# # Compute disparity image using StereoBM function
+		# stereo = cv2.StereoBM(cv2.STEREO_BM_BASIC_PRESET, ndisparities=0, SADWindowSize=23)
+		# disparity = stereo.compute(image_left_mono, image_right_mono, disptype=cv2.CV_32F)
+		# disparity_clean = cv2.convertScaleAbs(disparity)
 
 		# # Display image for testing
 		# cv2.namedWindow("Disparity Image", 0)
 		# cv2.imshow('Disparity Image', disparity_clean)
-		# cv2.waitKey(0)
+		# cv2.waitKey(3)
 
-		return disparity_clean
+		# return disparity_clean
 
-	def people_detect(self, image):
+	def depth_tracking(self):
 		'''
-			Function detects people in image using HOG function form imutils.
-			Returns images with rectangle around people, and people locations (pixels) on the image
-		'''
-
-		print("Detecting people function enabled")
-
-		# Initialize the HOG descriptor/person detector
-		hog = cv2.HOGDescriptor()
-		hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-
-		# Resize image to reduce detection time and improve detection accuracy
-		image_resize = imutils.resize(image, width=min(400, image.shape[1]))
-		orig = image.copy()
-
-		# Detect people in the image
-		(rects, weights) = hog.detectMultiScale(image_resize, winStride=(4, 4), padding=(8, 8), scale=1.05)
-
-		# Apply non-maxima suppression to the bounding boxes to get rid of sub-boxes
-		rects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in rects])
-		nms_rects = non_max_suppression(rects, probs=None, overlapThresh=0.65)
-
-		# Draw the bounding boxes on the original image
-		for (xA, yA, xB, yB) in nms_rects:
-			cv2.rectangle(orig, (xA, yA), (xB, yB), (0, 255, 0), 2)
-
-		# # Display image for testing
-		# cv2.imshow("HOG People Detector", orig)
-		# cv2.waitKey(0)
-
-		# Determine center location for each rectangle
-		centers = [[rect[0] + (rect[2] - rect[0])/2, rect[1] + (rect[3] - rect[1])/2] for rect in nms_rects]
-
-		return orig, centers
-
-	def main_tracking(self):
-		'''
-			The main tracking function. Invoked once state tracking variables are set in the callback functions
-			(There has to be a better/"ROS" way to do this, but haven't found out yet). Function will publish servo
+			Tracking function based on depth sensing. Function will publish servo
 			messages to track a human in the frame.
 		'''
 
-		# Re-assign state variables
-		self.state_left = False
-		self.state_right = False
+		print("Depth Tracking Function enabled")
 
-		print("Main Tracking Function enabled")
+		# Get left and right images
+		self.grab_left()
+		self.grab_right()
 
-		# Get people in both camera frames
-		track_image_left, centers_left = self.people_detect(self.image_left)
-		track_image_right, centers_right = self.people_detect(self.image_right)
+		# Rotate raw images
+		self.rotate_imgs()
 
-		# Combine center locations (or people) for both cameras
-		centers = centers_left + centers_right
+		# Print out class attributes using __str__ function
+		self.__str__()
 
-		print(centers_left)
-		print(centers_right)
-		print(centers)
+		# Create disparity map from images
+		self.depth_map()
 
-		# Make sure that there is some kind of human being tracked
-		if not centers:
-			print("No humans found")
-			return # If no human, do not move camera
-
-		# Set the middle pixle location for an image (based on image size)
-		middle_pixle = [480/2, 640/2]
-
-		# TODO: Publish the images showing tracking rectangles
-
-		# Choose a random person
-		person = centers[0]
-
-		# Get difference between center of person rectangle and center of the images
-		diff = [person[0] - middle_pixle[0], person[1] - middle_pixle[1]] 
-
-		print("diff: " + str(diff[0]) + " , " + str(diff[1]))
-
-		# # Sleep for some time to prevent flooding servos with messages
-		# rate = rospy.Rate(1)
-		# rate.sleep()
-
-		# Use servo object to move servos by difference
-		self.servos.move_servos(diff)
-
-	def callback_left(self,data):
+	def rotate_imgs(self):
 		'''
-			Callback function for left camera
+			Rotates left and right images to proper orientation. Note this is done with transpose and flip
+			as opposed to cv2.warpAffine to improve speed.
+		''' 
+
+		# Rotate left image
+		self.image_left = cv2.transpose(self.raw_image_left)
+		self.image_left = cv2.flip(self.image_left, 0)
+
+		# Rotate right image
+		self.image_right = cv2.transpose(self.raw_image_right)
+		self.image_right = cv2.flip(self.image_right, 1)
+
+	def grab_left(self):
 		'''
+			Grabs frame from left camera
+		''' 
 
-		try:
-			cv_image = self.bridge.imgmsg_to_cv2(data, "mono8")
-		except CvBridgeError as e:
-			print(e)
-
-		print("callback_left")
+		# Grab image directly from cv2 video capture object
+		foo, cv_image = self.cam_left.read()
 
 		# Store image in object
-		self.image_left = cv_image
+		self.raw_image_left = cv_image
 
-		# # Display image for testing
-		# cv2.imshow("Left Image", self.image_left)
-		# cv2.waitKey(3)
-
-		# Update state variable, advertising "fresh" image
-		self.state_left = True
-
-		# If both images are up-to-date
-		if all([self.state_left, self.state_right]):
-
-			# Run our main tracking function
-			self.main_tracking()
-
-	def callback_right(self,data):
+	def grab_right(self):
 		'''
-			Callback function for right camera
+			Grabs frame from right camera
 		'''
 
-		try:
-			cv_image = self.bridge.imgmsg_to_cv2(data, "mono8")
-		except CvBridgeError as e:
-			print(e)
-
-		print("callback_right")
+		# Grab image directly from cv2 video capture object
+		foo, cv_image = self.cam_right.read()
 
 		# Store image in object
-		self.image_right = cv_image
-
-		# # Display image for testing
-		# cv2.imshow("Right Image", self.image_right)
-		# cv2.waitKey(3)
-
-		# Update state variable, advertising "fresh" image
-		self.state_right = True
-
-		# If both images are up-to-date
-		if all([self.state_left, self.state_right]):
-
-			# Run our main tracking function
-			self.main_tracking()
+		self.raw_image_right = cv_image
 
 def main(args):
 
@@ -219,6 +238,9 @@ def main(args):
 
 	# Initialize tracking object
 	tracking_object = tracker(servo_object)
+
+	# Print out depth image
+	tracking_object.depth_tracking()
 
 	try:
 		rospy.spin()

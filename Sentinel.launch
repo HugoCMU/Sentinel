@@ -31,7 +31,7 @@
         </node>
 <!-- STEREO IMAGE PROC   -->
         <node pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" name="proc" args="_approximate_sync:=True" />
-  </group>
+  </group> -->
   <!-- Launch people tracking node -->
   <param name="servo1_default" value="90"/>
   <param name="servo2_default" value="90"/>

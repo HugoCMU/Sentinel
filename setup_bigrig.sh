@@ -16,3 +16,6 @@ export ROS_PACKAGE_PATH=/home/bigrig/Sentinel/src/sentinel_tracking:$ROS_PACKAGE
 
 # Set up namespace for stereo camera
 #ROS_NAMESPACE=my_stereo rosrun stereo_image_proc stereo_image_proc
+
+# Set extra variables due to new libraries breaking
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libgfortran.so.3
