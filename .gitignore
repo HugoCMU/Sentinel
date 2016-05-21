@@ -1,2 +1,6 @@
-camera_calibration/OpenCVCalibration/hist
-camera_calibration/OpenCVCalibration/tmp
+*.png
+*.jpg
+camera_calibration/OpenCVCalibration/hist/*.png
+camera_calibration/OpenCVCalibration/tmp/*.png
+camera_calibration/OpenCVCalibration/hist/*.jpg
+camera_calibration/OpenCVCalibration/tmp/*.jpg
