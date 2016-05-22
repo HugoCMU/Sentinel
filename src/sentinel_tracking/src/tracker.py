@@ -26,20 +26,33 @@ from cv_bridge import CvBridge, CvBridgeError
 # Import framework to deal with servos
 from servo_talker import servos
 
-# Define camera rotation parameters
-LEFT_ROTATION_ANGLE = 90
-RIGHT_ROTATION_ANGLE = -90
-
 # Define wait time for images
 IMSHOW_WAIT_TIME = 1000 # 3 seconds
 
-def cv_size(img):
+def display_image(image, frame_name="Image"):
+    '''
+        Displays given image in a named OpenCV window
+    '''
+    cv2.imshow(frame_name, image)
+    cv2.moveWindow(frame_name, 30, 30)
+    cv2.waitKey(IMSHOW_WAIT_TIME)
+    cv2.destroyAllWindows()
+    
+def display_double_image(image_L, image_R, frame_name="Image"):
 	'''
-		Function returns image size (not a tuple)
+		Displays two images (mono) in one OpenCV window
 	'''
-	return img.shape[1::-1]
 
-class tracker(object):
+	try:
+		new_img = np.hstack((image_L, image_R))
+	except ValueError:
+		print("Cannot diplay: dimmension mismatch in pictures")
+		return
+
+	# Show snapshot
+	display_image(new_img, frame_name)
+
+class Tracker(object):
 
 	def __init__(self, servo_object):
 
@@ -55,37 +68,15 @@ class tracker(object):
 		self.image_left = None
 		self.image_right = None
 
+		# Disparity image
+		self.disparity = None
+
 		# Servo object associated with tracker
 		self.servos = servo_object
 
-	def __str__(self):
-		'''
-			Function will show the stereo disparity map
-		'''
-
-		# Print out raw image sizes
-		print("Raw Left Image Size: " + str(tuple(cv_size(self.raw_image_left))))
-		print("Raw Right Image Size: " + str(tuple(cv_size(self.raw_image_right))))
-
-		# Print out rotated image sizes
-		print("Rotated Left Image Size: " + str(tuple(cv_size(self.image_left))))
-		print("Rotated Right Image Size: " + str(tuple(cv_size(self.image_right))))
-
-		# # Display Raw Left image for testing
-		# cv2.imshow("Raw Left Image", self.raw_image_left)
-		# cv2.waitKey(IMSHOW_WAIT_TIME)
-
-		# # Display image for testing
-		# cv2.imshow("Raw Right Image", self.raw_image_right)
-		# cv2.waitKey(IMSHOW_WAIT_TIME)
-
-		# # Display Raw Left image for testing
-		# cv2.imshow("Rotated Left Image", self.image_left)
-		# cv2.waitKey(IMSHOW_WAIT_TIME)
-
-		# # Display image for testing
-		# cv2.imshow("Rotated Right Image", self.image_right)
-		# cv2.waitKey(IMSHOW_WAIT_TIME)
+		# Load cailbration data
+		mtx_l, dist_l, newcameramtx_l = load_calibration(CALIB_FILENAME_L)
+		mtx_r, dist_r, newcameramtx_r = load_calibration(CALIB_FILENAME_R)
 
 	def depth_map(self):
 		'''
@@ -111,51 +102,44 @@ class tracker(object):
 		speckleWindowSize = [100, 200]
 		speckleRange = [20, 5, 1, 30]
 
+		# Get left and right images
+		self.grab_left()
+		self.grab_right()
 
-		for ur in uniquenessRatio:
-			for sw in speckleWindowSize:
-				for sr in speckleRange:
-					for dispa in disparities:
-						for sad in SADWindowSize:
+		# Rotate raw images
+		self.rotate_imgs()
 
-							# Get left and right images
-							self.grab_left()
-							self.grab_right()
+		print("--------------------------------------------------------------------")
+		print("(numDisparities: " + str(dispa))
+		print("(SADWindowSize: " + str(sad))
+		print("(uniquenessRatio: " + str(ur))
+		print("(speckleWindowSize: " + str(sw))
+		print("(speckleRange: " + str(sr))
 
-							# Rotate raw images
-							self.rotate_imgs()
+		window_size = 3
+		min_disp = 16
+		stereo = cv2.StereoSGBM(minDisparity=min_disp,
+		numDisparities=dispa,
+		SADWindowSize=sad,
+		P1 = 8*3*sad*sad,
+		P2 = 32*3*sad*sad,
+		disp12MaxDiff = 20,
+		preFilterCap=32,
+		uniquenessRatio = ur,
+		speckleWindowSize = sw,
+		speckleRange = sr,
+		fullDP=True
+		)
 
-							print("--------------------------------------------------------------------")
-							print("(numDisparities: " + str(dispa))
-							print("(SADWindowSize: " + str(sad))
-							print("(uniquenessRatio: " + str(ur))
-							print("(speckleWindowSize: " + str(sw))
-							print("(speckleRange: " + str(sr))
-
-							window_size = 3
-							min_disp = 16
-							stereo = cv2.StereoSGBM(minDisparity=min_disp,
-							numDisparities=dispa,
-							SADWindowSize=sad,
-							P1 = 8*3*sad*sad,
-							P2 = 32*3*sad*sad,
-							disp12MaxDiff = 20,
-							preFilterCap=32,
-							uniquenessRatio = ur,
-							speckleWindowSize = sw,
-							speckleRange = sr,
-							fullDP=True
-							)
-
-							print("Got past computation")
+		print("Got past computation")
 
 
-							disp = stereo.compute(self.image_left, self.image_right).astype(np.float32) / 16.0
+		disp = stereo.compute(self.image_left, self.image_right).astype(np.float32) / 16.0
 
-							print("Got past computation")
+		print("Got past computation")
 
-							cv2.imshow('disparity', (disp-min_disp)/dispa)
-							cv2.waitKey(500)
+		cv2.imshow('disparity', (disp-min_disp)/dispa)
+		cv2.waitKey(500)
 
 
 		# # Compute disparity image using StereoBM function
@@ -227,6 +211,31 @@ class tracker(object):
 		# Store image in object
 		self.raw_image_right = cv_image
 
+	def __str__(self):
+		'''
+			Function will show the stereo disparity map
+		'''
+
+		def cv_size(img):
+			'''
+				Function returns image size (not a tuple)
+			'''
+			return img.shape[1::-1]
+
+		# Print out raw image sizes
+		print("Raw Left Image Size: " + str(tuple(cv_size(self.raw_image_left))))
+		print("Raw Right Image Size: " + str(tuple(cv_size(self.raw_image_right))))
+
+		# Print out rotated image sizes
+		print("Rotated Left Image Size: " + str(tuple(cv_size(self.image_left))))
+		print("Rotated Right Image Size: " + str(tuple(cv_size(self.image_right))))
+
+		# # Display images for testing
+		# display_image(self.raw_image_left, "Raw Left Image")
+		# display_image(self.raw_image_right, "Raw Right Image")
+		# display_image(self.image_left, "Rotated Left Image")
+		# display_image(self.image_right, "Rotated Right Image")
+
 def main(args):
 
 	# Initialize node
@@ -239,7 +248,7 @@ def main(args):
 	# Initialize tracking object
 	tracking_object = tracker(servo_object)
 
-	# Print out depth image
+	# Start tracking the
 	tracking_object.depth_tracking()
 
 	try:
