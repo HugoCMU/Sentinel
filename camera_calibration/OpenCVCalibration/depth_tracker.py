@@ -78,7 +78,8 @@ for sad in SADWindowSize:
 
 					window_size = 3
 					min_disp = 16
-					stereo = cv2.StereoSGBM(minDisparity=min_disp,
+					stereo = cv2.StereoSGBM(
+						minDisparity=min_disp,
 					numDisparities=dispa,
 					SADWindowSize=sad,
 					P1 = 8*3*sad*sad,
@@ -91,7 +92,7 @@ for sad in SADWindowSize:
 					fullDP=True
 					)
 
-					disp = stereo.compute(img_r_undistorted, img_l_undistorted).astype(np.float32) / 16.0
+					disp = stereo.compute(img_l_undistorted, img_r_undistorted).astype(np.float32) / 16.0
 					disparity_img = (disp-min_disp)/dispa
 
 					disparity_img = (stereo.compute(img_r_undistorted, img_l_undistorted) / 16.0).astype(np.uint8)

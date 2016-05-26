@@ -56,27 +56,8 @@ class Tracker(object):
 
 	def __init__(self, servo_object):
 
-		# Create camera capture objects
-		self.cam_left = cv2.VideoCapture(0)
-		self.cam_right = cv2.VideoCapture(1)
-
-		# Raw left and right images
-		self.raw_image_left = None
-		self.raw_image_right = None
-
-		# Rotated left and right images
-		self.image_left = None
-		self.image_right = None
-
-		# Disparity image
-		self.disparity = None
-
 		# Servo object associated with tracker
 		self.servos = servo_object
-
-		# Load cailbration data
-		mtx_l, dist_l, newcameramtx_l = load_calibration(CALIB_FILENAME_L)
-		mtx_r, dist_r, newcameramtx_r = load_calibration(CALIB_FILENAME_R)
 
 	def depth_map(self):
 		'''
@@ -90,11 +71,9 @@ class Tracker(object):
 		image_left_mono = cv2.cvtColor(self.image_left, cv2.COLOR_BGR2GRAY)
 
 		# Display image for testing
-		cv2.imshow("Monocromatic Right Image", image_right_mono)
-		cv2.waitKey(IMSHOW_WAIT_TIME)
+		display_image(image_right_mono, "Monocromatic Right Image")
 		# Display image for testing
-		cv2.imshow("Monocromatic Image", image_left_mono)
-		cv2.waitKey(IMSHOW_WAIT_TIME)
+		display_image(image_left_mono, "Monocromatic Left Image")
 
 		disparities = [16, 32, 48, 64, 80, 96, 112]
 		SADWindowSize = [10, 15, 20] #, 5, 7, 15, 20, 30] #[5, 7, 15, 17, 23, 27, 29, 39, 45, 55, 67, 73, 85, 99, 107, 115, 121]

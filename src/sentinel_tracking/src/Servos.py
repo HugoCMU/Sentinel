@@ -5,9 +5,11 @@
 import rospy
 from std_msgs.msg import UInt16
 
-class servos(object):
+class Servos(object):
 
 	def __init__(self):
+
+		print "Servo object started." 
 
 		# Initialize publishers to servo commands
 		self.pub_1 = rospy.Publisher('/servo1', UInt16, queue_size=10)
@@ -76,7 +78,7 @@ class servos(object):
 			print "Servo 2 ( " + str(angles[1]) + " ) not in range (" + str(rospy.get_param("servo2_min")) + ", " + str(rospy.get_param("servo2_max")) + ")"
 			return True
 
-		if angles[1] > rospy.get_param("servo2_max"):
+		elif angles[1] > rospy.get_param("servo2_max"):
 			print "Servo 2 ( " + str(angles[1]) + " ) not in range (" + str(rospy.get_param("servo2_min")) + ", " + str(rospy.get_param("servo2_max")) + ")"
 			return True
 
@@ -107,7 +109,10 @@ class servos(object):
 
 if __name__ == '__main__':
 	try:
-		servo_obj = servos() 
-		test_servos(servo_obj)
+		servo_obj = servos()
+
+		servo_obj.test_servos()
+		servo_obj.home_servos()
+
 	except rospy.ROSInterruptException:
 		pass
