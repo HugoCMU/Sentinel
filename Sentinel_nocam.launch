@@ -10,7 +10,7 @@
   <param name="servo1_max" value="180"/>
   <param name="servo2_min" value="0"/>
   <param name="servo2_max" value="90"/>
-  <param name="P_gain" value="0.03"/>
+  <param name="P_gain" value="1"/>
 <!--   <node pkg="sentinel_tracking" type="sentinel_tracking.py" name="sentinel_tracking">
     <param name="servo1_default" value="45"/>
     <param name="servo2_default" value="45"/>
@@ -18,7 +18,7 @@
     <param name="servo1_max" value="180"/>
     <param name="servo2_min" value="0"/>
     <param name="servo2_max" value="90"/>
-    <param name="P_gain" value="0.2"/>
+    <param name="P_gain" value="1"/>
   </node> -->
   <!-- monitoring and configuration tools
   <node pkg="rxtools" type="rxconsole" name="rxconsole" />

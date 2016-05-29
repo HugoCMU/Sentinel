@@ -2,8 +2,7 @@
 # 05/22/2016 HugoCMU
 # Threading class for grabbing image frames fopr PS3 eye 
 
-from __future__ import print_function
-
+import rospy
 from threading import Thread
 import cv2
 import os
@@ -13,7 +12,7 @@ import numpy as np
 class WebcamVideoStream(object):
 	def __init__(self,  src=0):
 
-		print("Webcam (src %s) started." % src)
+		rospy.loginfo("Webcam (src %s) started." % src)
 
 		# initialize the video camera stream and read the first frame
 		# from the stream
@@ -73,7 +72,7 @@ class StereoStream(object):
 
 	def __init__(self):
 
-		print("Stereo stream started.")
+		rospy.loginfo("Stereo stream started.")
 
 		# Create WebcamVideoStream objects
 		self.cam_thread_left = WebcamVideoStream(src=1).start()
